@@ -24,6 +24,7 @@ const helper = {
 
 
   generateToken(payload) {
+    process.env.SECRET="secret";
     const token = jwt.sign(
       payload,
       process.env.SECRET, { expiresIn: '20d' }

@@ -1,18 +1,19 @@
-// const mysql=require('mysql');
+const Sequelize = require('sequelize')
+const db = {}
+const sequelize = new Sequelize('sendit', 'root', '', {
+  host: 'localhost',
+  dialect: 'mysql',
+  operatorsAliases: false,
 
-//  const connection=mysql.createConnection({
-//    host:process.env.HOST,
-//    user:process.env.USER,
-//    password:'',
-//    database:process.env.DATABASE
-//  });
-// connection.connect(function(error){
-//    if(!!error){
-//      console.log(error);
-//    }else{
-//      console.log('Database Connected!:)');
-//    }
-//  });  
-//  global.connection = connection;
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  }
+})
 
-// module.exports = connection; 
+db.sequelize = sequelize
+db.Sequelize = Sequelize
+
+module.exports = db

@@ -1,7 +1,10 @@
 const moment = require('moment');
 // const db  = require('../config/db');
 const dotenv = require('dotenv');
-const Helper = require('../helpers/helper'); 
+const helper = require ('../helpers/helper');
+const Users = require('../models/users');
+const Parcels = require('../models/parcels');
+
 const {
   createParcelsSchema,
   destinationSchema,
@@ -31,172 +34,204 @@ class Parcels {
     };
 
       
-    const query = `INSERT INTO parcels (placedby,weight,weightmetric,senton,status,fromaddress,toaddress,currentlocation,itemname, recipient) 
-                  VALUES('${newOrder.placedBy}','${newOrder.weight}','${newOrder.weightmetric}','${newOrder.sentOn}','${newOrder.status}','${newOrder.fromAddress}'
-                  ,'${newOrder.toAddress}','${newOrder.currentLocation}','${newOrder.itemName}','${newOrder.recipient}') returning *`
-    db.query(query)
-    .then((result) => {
-      if(result.rowCount === 0) {
-        return res.status(500).json({ "status": res.statusCode, "Message": 'An error occured while trying to save your order ensure that weight is a valid number and Address are not empty'})
-      } else if(result.rowCount >= 1) {
-        return res.status(201).json({"status": res.statusCode, "message": "New parcel added successfuly", "data": result.rows[0]});
-      }
+    Parcels.create(newOrder)
+    .then(result =>{
+      res.status(200).send({'status':200, 'message': result.itemName + " added Successfully"});
     })
-    .catch((error) => {
-      res.status(500).json({ "status": res.statusCode, "error": `An error occured while trying to save your order ${error}`})
+    .catch(err =>{
+      res.status(500).send({'status':200,'error':`An error occured while trying to save your order ${err}`})
     })
   }
 
   static getAll(req, res) {
       if(!req.adminStatus) {
-        const query =  `SELECT * FROM parcels where placedBy ='${req.user}'`
-        db.query(query)
-        .then((result) => {
-          if(result.rowCount === 0) {
-            return res.status(204).json({ "status": res.statusCode, "error": 'You have not created any parcels'})
-          } else if (result.rowCount >= 1) {
-            res.status(200).json({"status": res.statusCode, "data": result.rows});
+        Parcels.findAll({
+          where:{
+            placedBy: req.user
           }
         })
-        .catch((error) => {
-          res.status(500).json({ "status": res.statusCode, "error": "Could not get parcels from database"})
-        })
-
-      } else {
-        const query =  `SELECT * FROM parcels`
-        db.query(query)
-        .then((result) => {
-          if(result.rowCount === 0) {
-            return res.status(204).json({ "status": res.statusCode, "error": 'No Parcels'})
-          } else if (result.rowCount >= 1) {
-            res.status(200).json({"status": res.statusCode, "data": result.rows});
-          }
-        })
-        .catch((error) => {
-          res.status(500).json({ "status": res.statusCode, "error": "Could not get parcels from database"})
-        })
+        .then(result =>{
+          if(!result){
+            res.status(204).send({"status": 204, "message": "User has no parcel delivery orders"})
+        }
+        else{
+          res.status(200).send({"status": 200, "data": result})
+        }
+      })
+      .catch(err => {
+        res.send('error: '+ err);
+      })
+    }else{
+      Parcels.findAll({raw:true})
+      .then(result =>{
+        if(!result){
+          res.status(204).send({"status": 204, "message": "No Parcels"})
       }
+      else{
+        res.status(200).send({"status": 200, "data": result})
+      }
+    })
+    .catch(err => {
+      res.send('error: '+ err);
+    })
     }
+  }
+
 
     static getOne(req, res) {
-     let id = req.params.id
     if (!req.adminStatus) {
-      const query = `SELECT * FROM parcels WHERE ID='${id}'and placedBy='${req.user}'`
-      db.query(query)
-        .then((result) => {
-          if(result.rowCount === 0) {
-            return res.status(400).json({ "status": res.statusCode, "error": 'You do not own such parcel delivery order'})
-          } else if (result.rowCount >= 1) {
-            res.status(200).json({"status": res.statusCode, "data": result.rows[0]});
-          }
-        })
-        .catch((error) => {
-          res.status(500).json({ "status": res.statusCode, "error": "Could not get parcels from database"})
-        })
-      
-    } else {
-      const query = `SELECT * FROM parcels WHERE ID='${id}'`
-      db.query(query)
-        .then((result) => {
-          if(result.rowCount === 0) {
-            return res.status(204).json({ "status": res.statusCode, "error": 'No such parcel'})
-          } else if (result.rowCount >= 1) {
-            res.status(200).json({"status": res.statusCode, "data": result.rows[0]});
-          }
-        })
-        .catch((error) => {
-          res.status(500).json({ "status": res.statusCode, "error": "Could not get parcels from database"})
-        })
-    }
-   }
 
-  static cancel(req, res) {
-    const id = req.params.id;
-    const newStatus = 'canceled';
-    const query = `UPDATE parcels SET status='${newStatus}' WHERE id='${id}' and placedby='${req.user}' returning *`
-    db.query(query)
-        .then((result) => {
-          if(result.rowCount === 0) {
-            return res.status(400).json({ "status": 400, "error": 'Only parcel owners can cancel their delivery order'})
-          } else if (result.rowCount >= 1) {
-           return res.status(200).json({"status": 200, "message": "Your parcel delivery order has been cancelled ", "data": result.rows[0] });
-          }
-        })
-        .catch((error) => {
-          return res.status(500).json({ "status": 500, "error": "Could not get parcels from database"})
-        })
-  }
-
-  static changeDestination(req, res) {
-    const id = req.params.id;
-    const fieldError = destinationSchema(req.body)
-    if(fieldError) {
-      return res.status(400).json({ "status": 400, "error": fieldError})
-    }
-    const newDestination = req.body.toAddress
-    const query = `UPDATE parcels SET toAddress='${newDestination}' WHERE id='${id}' AND placedby='${req.user}' returning *`
-    db.query(query)
-    .then((result) => {
-      if(result.rowCount === 0) {
-        return res.status(204).json({ "status": 204, "error": 'Only parcel owners can change order destination'})
-      } else if (result.rowCount >= 1) {
-        return res.status(200).json({"status": 200, "Message": "The destination has been changed successfully ", "data": result.rows[0]});
-      }
-    })
-    .catch((error) => {
-      return res.status(500).json({ "status": 500, "error": "An error ocurred while trying to change the parcel Destination"})
-    })
-  }
-
-  static changeCurrentLocation(req, res) {
-    if (req.adminStatus) {
-      const id = req.params.id;
-      
-      const fieldError = currentLocationSchema(req.body)
-      if(fieldError) {
-        return res.status(400).json({ "status": 400, "error": fieldError})
-
-      }
-      const currentLocation = req.body.currentLocation
-      const query = `UPDATE parcels SET toaddress='${currentLocation}' WHERE id='${id}' returning *` 
-      db.query(query)
-      .then((result) => {
-        if(result.rowCount === 0) {
-          return res.status(204).json({ "status": 204, "error": 'No such parcel'})
-        } else if (result.rowCount >= 1) {
-          res.status(200).json({"status": 200, "Message": "The current location of the order has been updated successfully ", "data": result.rows[0] });
+      Parcels.findOne({
+        where:{
+          ID:req.params.id,
+          placedBy: req.user
         }
+      })
+      .then(result =>{
+        if(!result){
+          res.status(204).send({"status": 204, "message": "You do not own such parcel delivery order"})
+      }
+      else{
+        res.status(200).send({"status": 200, "data": result})
+      }
     })
-    .catch((error) => {
-      res.status(500).json({ "status": 500, "error": "Could not find the parcel in database"})
+    .catch(err => {
+      res.send('error: '+ err);
     })
-  } else {
-    res.json({"Message": "Only Admins can access this route"})
+  }else{
+    Parcels.findAll({
+      where:{
+        id:req.params.id,
+      }
+    })
+    .then(result =>{
+      if(!result){
+        res.status(204).send({"status": 204, "message": "No such parcel"});
+    }
+    else{
+      res.status(200).send({"status": 200, "data": result})
+    }
+  })
+  .catch(err => {
+    res.send('error: '+ err);
+  })
   }
 }
 
+
+  static cancel(req, res) {
+    const newStatus = 'canceled';
+      Parcels.update(
+        {status:newStatus},
+        {where : {
+          id = req.params.id,
+          placedBy: req.user
+        }}
+        )
+        .then(result => {
+          if(!result){
+            res.status(400).send({ "status": 400, "message": 'Only parcel owners can cancel their delivery order'})
+        }
+        else{
+          res.status(200).send({"status": 200, "Message": "Your parcel delivery order has been cancelled ", 'data':result});
+        }
+      })
+      .catch(err => {
+        res.send('error: '+ err);
+      })
+
+  }
+
+
+  static changeDestination(req, res) {
+
+    const fieldError = destinationSchema(req.body)
+    if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
+
+    const newDestination = req.body.toAddress
+
+    Parcels.update(
+      {toAddress:newDestination},
+      {where : {
+        id = req.params.id,
+        placedBy: req.user
+      }}
+      )
+      .then(result => {
+        if(!result){
+          res.status(204).json({ "status": 204, "message": 'Only parcel owners can change order destination'})
+      }
+      else{
+        res.status(200).send({"status": 200, "Message": "The destination has been changed successfully ", 'data':result});
+      }
+    })
+    .catch(err => {
+      res.send('error: '+ err);
+    })
+
+  }
+
+
+
+  static changeCurrentLocation(req, res) {
+    if (req.adminStatus) {
+      
+      const fieldError = currentLocationSchema(req.body)
+      if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
+     
+      const currentLocation = req.body.currentLocation
+
+      Parcels.update(
+        {toAddress:currentLocation},
+        {where : {
+          id = req.params.id
+        }}
+        )
+        .then(result => {
+          if(!result){
+            res.status(204).json({ "status": 204, "message": 'No such parcel'})
+        }
+        else{
+          res.status(200).send({"status": 200, "Message": "The current location of the order has been updated successfully", 'data':result});
+        }
+      })
+      .catch(err => {
+        res.send('error: '+ err);
+      })
+
+  } else {
+    res.send({"Message": "Only Admins can access this route"})
+  }
+}
+
+
+
 static changeStatus(req, res) {
   if (req.adminStatus) {
-    const id = req.params.id;
 
     const fieldError = changeStatusSchema(req.body)
-    if(fieldError) {
-      return res.status(400).json({ "status": res.statusCode, "error": fieldError})
-    }
+    if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
+
     const status = req.body.status
-    const query = `UPDATE parcels SET status='${status}' WHERE id='${id}' AND status='pending'` 
-    db.query(query)
-  .then((result) => {
-    if(result.rowCount === 0) {
-      return res.status(400).json({ "status": 400, "error": 'This parcel delivery order might have been cancelled or delivered'})
-    } else if (result.rowCount >= 1) {
-      Helper.sendEmail()
-      res.status(200).json({"status": 200, "Message": "The status of the parcel has been changed successfully "});
-    }
-  })
-  .catch((error) => {
-    res.status(500).json({ "status": 500, "error": "Could not find the parcel in database"})
-  })
+    Parcels.update(
+      {status:status},
+      {where : {
+        id = req.params.id,
+        status: 'pending'
+      }}
+      )
+      .then(result => {
+        if(!result){
+          res.status(204).json({ "status": 204, "message": 'This parcel delivery order might have been cancelled or delivered'})
+      }
+      else{
+        helper.sendEmail()
+        res.status(200).send({"status": 200, "Message": "The status of the parcel has been changed successfully", 'data':result});
+      }
+    })
+    .catch(err => {
+      res.send('error: '+ err);
+    })
 } else {
     res.json({"Message": "Only Admins can access this route"})
   }

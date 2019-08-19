@@ -3,27 +3,12 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 const mysql=require('mysql');
+const db = require('./config/db');
 
 // const swagger = require("swagger-ui-express");
 // import swaggerDocument from "../swagger.js";
 
 let app = express();
-
-const db = mysql.createConnection ({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'sendam'
-});
-
-// connect to database
-db.connect((err) => {
-  if (err) {
-      throw err;
-  }
-  console.log('Connected to new database');
-});
-global.db = db;
 
 
 const parcelRoute = require('./routes/parcels');
@@ -32,7 +17,9 @@ const authRoute = require('./routes/auth');
 
 app.set('views', path.join(__dirname, 'views'));
 
-app.use(bodyParser.urlencoded({ extended: false }))
+// app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.use(

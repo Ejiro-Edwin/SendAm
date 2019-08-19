@@ -11,7 +11,7 @@ class Auth {
       const bearerToken = bearerArray[1];
       req.token = bearerToken;
 
-      jwt.verify(req.token, process.env.SECRET, (err, data) => {
+      jwt.verify(req.token, "SECRET", (err, data) => {
         if (err) {
           res.status(403).send("You cannot access this page because you require a token to access it");
         } else {

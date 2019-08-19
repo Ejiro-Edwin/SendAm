@@ -34,6 +34,7 @@
     "coveralls": "^3.0.2",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
+    "helmet": "^3.20.0",
     "istanbul": "^0.4.5",
     "joi": "^14.0.6",
     "jsdoc": "^3.5.5",
@@ -41,10 +42,11 @@
     "mocha": "^5.2.0",
     "moment": "^2.22.2",
     "mysql": "^2.17.1",
+    "mysql2": "^1.6.1",
     "nodemailer": "^4.6.8",
     "nyc": "^13.1.0",
+    "sequelize": "4.35.0",
     "swagger-ui-express": "^4.0.1",
-    "uuidv4": "^2.0.0",
-    "sequelize": "4.35.0"
+    "uuidv4": "^2.0.0"
   }
 }

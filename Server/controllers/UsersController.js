@@ -2,6 +2,10 @@ const moment = require ('moment');
 // const db = require('../config/db');
 const dotenv = require('dotenv');
 const helper = require ('../helpers/helper');
+const Users = require('../models/users');
+const Parcels = require('../models/parcels');
+
+
 const {
   signUpSchema,
   loginSchema
@@ -10,13 +14,14 @@ const {
 dotenv.config();
 
 class User {
-  static signup(req, res) {     
+  static signup(req, res) {
 
     const fieldError = signUpSchema(req.body)
     if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
 
     const hashedPassword = helper.hashPassword(req.body.password);
-    const newUser = {
+
+    const UserData = {
       firstname: req.body.firstname,
       lastname: req.body.lastname,
       othernames: req.body.othernames,
@@ -26,150 +31,184 @@ class User {
       isAdmin: 'false',
       password: hashedPassword
     };
-    
-    
-    const Check = `SELECT * FROM users WHERE email='${newUser.email}'`
-    db.query(Check, function (err, result) {
-      if (err)  return res.status(500).send(err);
 
-      if (result.length > 0) res.send({"error": "Username already exists"})
+    Users.findOne({
+      where:{
+        email:req.body.email
+      }
+    }).then(user =>{
+      if(!user){
+         Users.create(UserData)
+        .then(user =>{
+          res.status(200).send({status: user.email + " Registered Successfully"});
+        })
+        .catch(err =>{
+          res.send('error:'+err)
+        })
 
-    });
+      }else{
+       res.status(400).send({error:"User already exists"});
+      }
 
-    const query = `INSERT INTO users (firstname,lastname,othernames,email,username,registered,isAdmin,password) 
-    VALUES('${newUser.firstname}','${newUser.lastname}','${newUser.othernames}','${newUser.email}','${newUser.username}',
-    '${newUser.registered}','${newUser.isAdmin}','${newUser.password}')`
+    })
+   .catch(err =>  {
+    res.send('error: '+ err);
+  })
 
-     db.query(query, function (error, result) {
-      if (error)  return res.status(500).send(error);
-
-        if(result.rowCount >=1) {
-          res.status(200).json({"status":200,"message":"User saved successfully","data": result.rows[0]})
-        } else if (result.rowCount === 0) {
-          res.status(500).json({"status": 500, "message": "The user could not be saved"})
-        }
-
-     
-        });
 }
-  
+
 
   static login (req, res) {
-    
-    const fieldError = loginSchema(req.body)
+
+  const fieldError = loginSchema(req.body)
   if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
-    
-  
+
+
     const loginData = {
       email: req.body.email,
-      password: req.body.password,
-    }
+      password: req.body.password
+    };
 
-    const query = `SELECT * FROM users WHERE email='${loginData.email}'`
-    db.query(query, function (err, result) {
-      if (err)  return res.status(500).send(err);
-
-      if(result.rowCount ==0) {
-        res.status(400).json({ "status": 400, "error": 'An error occured while trying to log you in Check your details again'})
-      } else if (result.rowCount >=1) {
-          if(!helper.comparePassword(result.rows[0].password, req.body.password)) {
-            return res.status(400).json({ 'message': 'The credentials you provided are incorrect' });
-          } else {
-            loginData.userId=result.rows[0].id
-            loginData.isAdmin=result.rows[0].isadmin
-            loginData.username=result.rows[0].firstname
-            delete(loginData.password)
-            const token = helper.generateToken(loginData);
-            return res.status(200).json({ "token": token, "message": "Login successful" });
-          }
+    Users.findOne({
+      where:{
+        email: req.body.email
+      }
+    }).then(user =>{
+      if(user){
+        // if(!helper.comparePassword(result.rows[0].password, req.body.password)) {
+          if(!helper.comparePassword(user.password, req.body.password)) {
+          return res.status(400).json({ 'message': 'The credentials you provided are incorrect' });
+        }
+        else{
+          loginData.userId=user.id
+          loginData.isAdmin=user.isadmin
+          loginData.username=user.username
+          delete(loginData.password)
+          const token = helper.generateToken(loginData);
+          return res.status(200).json({ "token": token, "message": "Login successful" });
+        }
+      }
+      else{
+        res.status(400).send("User does not exist");
       }
     })
-}
+    .catch(err => {
+      res.send('error: '+ err);
+    })
+  }
 
 
 
   static getAll (req, res) {
-    const query = 'SELECT * FROM users'
     if(req.adminStatus){
-      db.query(query)
-      .then((result) => {
-        if (result.rowCount ===0) {
-          res.status(204).json({"status": 204, "message": "No Users Found"})
-        } else if (result.rowCount >=1 ) {
-            res.json({"status": 200, "data": result.rows})
-        }
-      })
-      .catch((error) => {
-        res.status(500).json({"status": 500, "message":"An error occurd when trying to get users from database"})
-      })
-    } else {
-      res.status(403).json({"Message": "Only Admins can access this route"})
+      Users.findAll({raw:true}).then(AllUser =>{
+        if(!AllUser){
+          res.status(204).send({"status": 204, "message": "No Users Found"})
+      }
+      else{
+        res.status(200).send({"status": 200, "data": AllUser})
+      }
+    })
+    .catch(err => {
+      res.send('error: '+ err);
+    })
     }
-  }
+    else{
+      res.status(403).send({"Message": "Only Admins can access this route"})
+    }
+
+}
+
 
 
   static getOne (req, res) {
-    let id = req.params.id
     if(req.adminStatus) {
-      const query = `SELECT * FROM users WHERE ID='${id}'`
-      db.query(query)
-      .then((result) => {
-        if (result.rowCount ===0) {
-          res.status(204).json({"status": 204, "message": "No Such User Found"})
-        } else if (result.rowCount >=1 ) {
-            res.json({"status": 200, "data": result.rows})
+      Users.findOne({
+        where:{
+          id: req.params.id
         }
       })
-      .catch((error) => {
-        res.status(500).json({"status": 500, "message":"An error occurd when trying to get user from database"})
-      })   
-    } else {
-      res.status(403).json({"status": 403, "message":"This is an admin functionality"})
+
+      .then(user =>{
+        if(!user){
+          res.status(204).send({"status": 204, "message": "No Such User Found"})
+      }
+      else{
+        res.status(200).send({"status": 200, "data": user})
+      }
+    })
+    .catch(err => {
+      res.send('error: '+ err);
+    })
     }
-  }
+    else{
+      res.status(403).send({"Message": "Only Admins can access this route"})
+    }
+
+}
 
 
   static getUserParcels (req, res) {
-    const id = req.params.id
+
     if(req.adminStatus) {
-      const query = `SELECT * FROM parcels WHERE placedBy='${id}'`
-      db.query(query)
-      .then((result) => {
-        if (result.rowCount ===0) {
-          res.status(400).json({"status": 400, "message": "User has no parcel delivery orders"})
-        } else if (result.rowCount >=1 ) {
-            res.status(200).json({"status": 200, "data": result.rows})
+      Parcels.findAll({
+        where:{
+          placedBy: req.params.id
         }
       })
-      .catch((error) => {
-        res.status(500).json({"status": 500, "message":"An error occurd when trying to get user parcels from database"})
-      })
-    } else {
-      res.status(403).json({"Message": "Only Admins can access this route"})
+
+      .then(result =>{
+        if(!result){
+          res.status(400).send({"status": 400, "message": "User has no parcel delivery orders"})
+      }
+      else{
+        res.status(200).send({"status": 200, "data": result})
+      }
+    })
+    .catch(err => {
+      res.send('error: '+ err);
+    })
     }
-  }
+    else{
+      res.status(403).send({"Message": "Only Admins can access this route"})
+    }
+
+}
+
+
+
 
 
   static makeAdmin(req, res) {
     if (req.adminStatus) {
-      const id = req.params.id;
       const adminstatus = true
-      const query = `UPDATE users SET isadmin='${adminstatus}' WHERE id='${id}' RETURNING *` 
-      db.query(query)
-      .then((result) => {
-        if(result.rowCount === 0) {
-          return res.status(204).json({ "status": 204, "error": 'No such User'})
-        } else if (result.rowCount >= 1) {
-          res.status(200).json({"status": 200, "Message": "The user has been made an Admin successfully "});
+      Users.update(
+        {isadmin:true},
+        {where : {
+          id = req.params.id
+        }}
+        )
+        .then(result => {
+          if(!result){
+            res.status(204).send({ "status": 204, "message": 'No such User'})
+        }
+        else{
+          res.status(200).send({"status": 200, "Message": "The user has been made an Admin successfully "});
         }
       })
-      .catch((error) => {
-        res.status(500).json({ "status": 500, "error": "An error occured while trying to make user an Admmin, try again"})
+      .catch(err => {
+        res.send('error: '+ err);
       })
-  } else {
-    res.status(403).json({"Message": "Only Admins can access this route"})
-    }
+      }
+      else{
+        res.status(403).send({"Message": "Only Admins can access this route"})
+      }
+  
   }
+      
 }
+
+
+
 
 module.exports = User;
