@@ -1,6 +1,8 @@
 # Send-AM
 SendAM is a courier service that helps users deliver parcels to different destinations. SendIT provides courier quotes based on weight categories.
 
+![Test Image 1](https://github.com/Ejiro-Edwin/SendAm/tree/master/Server/API_INT.png)
+
 ## Feature
 * There are two types of users admin and regular user
 * Users can Register if they have no account or login otherwise

@@ -1,5 +1,4 @@
 const moment = require ('moment');
-// const db = require('../config/db');
 const dotenv = require('dotenv');
 const helper = require ('../helpers/helper');
 const Users = require('../models/users');

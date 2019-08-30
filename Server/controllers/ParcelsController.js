@@ -120,7 +120,7 @@ class Parcels {
 
   static cancel(req, res) {
     const newStatus = 'canceled';
-    Parcel.update(
+    parcel.update(
         {status:newStatus},
         {where : {
           id : req.params.id,
@@ -149,7 +149,7 @@ class Parcels {
 
     const newDestination = req.body.toAddress
 
-    Parcel.update(
+    parcel.update(
       {toAddress:newDestination},
       {where : {
         id : req.params.id,
@@ -180,7 +180,7 @@ class Parcels {
      
       const currentLocation = req.body.currentLocation
 
-      Parcel.update(
+      parcel.update(
         {toAddress:currentLocation},
         {where : {
           id : req.params.id
@@ -212,7 +212,7 @@ static changeStatus(req, res) {
     if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
 
     const status = req.body.status
-    Parcel.update(
+    parcel.update(
       {status:status},
       {where : {
         id : req.params.id,

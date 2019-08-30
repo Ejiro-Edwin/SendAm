@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const sgMail = require('@sendgrid/mail');
+const config = require('config');
 
 dotenv.config();
 
@@ -17,7 +18,7 @@ const helper = {
   generateToken(payload) {
     const token = jwt.sign(
       payload,
-      "secret", { expiresIn: '20d' }
+      config.get('SECRET'), { expiresIn: '20d' }
     );
     return token;
   },
@@ -32,7 +33,7 @@ const helper = {
        html: "Your PDO has been updated",
      };
      sgMail.send(mail);
-  }
+  },
 }
 
 module.exports = helper;

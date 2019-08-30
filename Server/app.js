@@ -2,11 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
-const mysql=require('mysql');
-const db = require('./config/db');
-
-// const swagger = require("swagger-ui-express");
-// import swaggerDocument from "../swagger.js";
+const swagger = require("swagger-ui-express");
+const swaggerDocument = require("../Swagger.js");
 
 let app = express();
 
@@ -14,10 +11,10 @@ let app = express();
 const parcelRoute = require('./routes/parcels');
 const userRoute = require('./routes/users');
 const authRoute = require('./routes/auth');
+app.use("/docs", swagger.serve, swagger.setup(swaggerDocument));
 
 app.set('views', path.join(__dirname, 'views'));
 
-// app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -40,15 +37,14 @@ app.all('/*', function(req, res, next) {
 app.use('/api/v1/auth', authRoute)
 app.use('/api/v1/parcels', parcelRoute)
 app.use('/api/v1/users', userRoute)
-// app.use("/docs", swagger.serve, swagger.setup(swaggerDocument));
 
 app.get('/', (req, res) => {
   return res.status(200).json({ msg: 'Welcome to new SendAM API.'});
 });
 
-// app.use(function (err, req, res, next) {
-//   res.status(500).send('Something wrong broke!');
-// })
+ app.use(function (err, req, res, next) {
+ res.status(500).send('Something wrong broke!');
+ })
 
 const port = process.env.PORT || 10000;
 
