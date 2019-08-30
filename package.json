@@ -4,28 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node server/app.js"
+    "start": "nodemon server/app.js",
+    "test": "nyc ./node_modules/.bin/mocha --timeout 100000 --require @babel/register --require @babel/polyfill server/test --exit || true",
+    "dev": "webpack-dev-server --mode development --open",
+    "start:prod": "node dist/app.prod.js",
+    "start:prod1": "node dist/server/app.prod.js",
+    "build": "babel server -d dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "@babel/core": "^7.2.2",
-    "@babel/preset-env": "^7.2.3",
-    "@babel/preset-react": "^7.0.0",
-    "babel-loader": "^8.0.5",
-    "eslint": "^5.9.0"
-  },
+  "devDependencies": {},
   "dependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/node": "^7.0.0",
-    "@babel/polyfill": "^7.0.0",
-    "@babel/register": "^7.0.0",
     "@sendgrid/mail": "^6.3.1",
     "assert": "^1.4.1",
-    "babel-eslint": "^10.0.1",
-    "babel-plugin-istanbul": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
@@ -44,8 +36,9 @@
     "mysql": "^2.17.1",
     "mysql2": "^1.6.1",
     "nodemailer": "^4.6.8",
+    "nodemon": "^1.19.1",
     "nyc": "^13.1.0",
-    "sequelize": "4.35.0",
+    "sequelize": "3.0.0",
     "swagger-ui-express": "^4.0.1",
     "uuidv4": "^2.0.0"
   }

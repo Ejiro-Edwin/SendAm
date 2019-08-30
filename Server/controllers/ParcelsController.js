@@ -2,8 +2,7 @@ const moment = require('moment');
 // const db  = require('../config/db');
 const dotenv = require('dotenv');
 const helper = require ('../helpers/helper');
-const Users = require('../models/users');
-const Parcels = require('../models/parcels');
+const parcel = require('../models/parcels');
 
 const {
   createParcelsSchema,
@@ -30,22 +29,22 @@ class Parcels {
       toAddress: req.body.toAddress,
       currentLocation: req.body.fromAddress,
       itemName: req.body.itemName,
-      recipient: req.body.recipientName
+      recipient: req.body.recipient
     };
 
       
-    Parcels.create(newOrder)
+    parcel.create(newOrder)
     .then(result =>{
       res.status(200).send({'status':200, 'message': result.itemName + " added Successfully"});
     })
     .catch(err =>{
-      res.status(500).send({'status':200,'error':`An error occured while trying to save your order ${err}`})
+      res.status(500).send({'status':500,'error':`An error occured while trying to save your order ${err}`})
     })
   }
 
   static getAll(req, res) {
       if(!req.adminStatus) {
-        Parcels.findAll({
+        parcel.findAll({
           where:{
             placedBy: req.user
           }
@@ -62,7 +61,7 @@ class Parcels {
         res.send('error: '+ err);
       })
     }else{
-      Parcels.findAll({raw:true})
+      parcel.findAll({raw:true})
       .then(result =>{
         if(!result){
           res.status(204).send({"status": 204, "message": "No Parcels"})
@@ -81,7 +80,7 @@ class Parcels {
     static getOne(req, res) {
     if (!req.adminStatus) {
 
-      Parcels.findOne({
+      parcel.findOne({
         where:{
           ID:req.params.id,
           placedBy: req.user
@@ -99,7 +98,7 @@ class Parcels {
       res.send('error: '+ err);
     })
   }else{
-    Parcels.findAll({
+    parcel.findAll({
       where:{
         id:req.params.id,
       }
@@ -121,10 +120,10 @@ class Parcels {
 
   static cancel(req, res) {
     const newStatus = 'canceled';
-      Parcels.update(
+    Parcel.update(
         {status:newStatus},
         {where : {
-          id = req.params.id,
+          id : req.params.id,
           placedBy: req.user
         }}
         )
@@ -150,10 +149,10 @@ class Parcels {
 
     const newDestination = req.body.toAddress
 
-    Parcels.update(
+    Parcel.update(
       {toAddress:newDestination},
       {where : {
-        id = req.params.id,
+        id : req.params.id,
         placedBy: req.user
       }}
       )
@@ -181,10 +180,10 @@ class Parcels {
      
       const currentLocation = req.body.currentLocation
 
-      Parcels.update(
+      Parcel.update(
         {toAddress:currentLocation},
         {where : {
-          id = req.params.id
+          id : req.params.id
         }}
         )
         .then(result => {
@@ -213,10 +212,10 @@ static changeStatus(req, res) {
     if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
 
     const status = req.body.status
-    Parcels.update(
+    Parcel.update(
       {status:status},
       {where : {
-        id = req.params.id,
+        id : req.params.id,
         status: 'pending'
       }}
       )

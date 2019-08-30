@@ -23,3 +23,12 @@ SendAM is a courier service that helps users deliver parcels to different destin
 * View all users:                 /api/v1/users
 * View a single user:             /api/v1/users/<id>
 * View parcels belonging to user: /api/v1/users/<id>/parcels
+
+## Contributor/Amendment
+* **Obamrevwo Ejiro Edwin** - https://github.com/Ejiro-Edwin
+
+## Author
+
+* **Princess Egbuna** - https://github.com/princesso
+
+

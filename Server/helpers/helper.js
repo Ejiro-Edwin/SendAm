@@ -6,32 +6,21 @@ const sgMail = require('@sendgrid/mail');
 dotenv.config();
 
 const helper = {
-
-
   hashPassword(password) {
     return bcrypt.hashSync(password, bcrypt.genSaltSync(8))
   },
-
 
   comparePassword(hashPassword, password) {
     return bcrypt.compareSync(password, hashPassword);
   },
 
-
-  // isValidEmail(email) {
-  //   return /\S+@\S+\.\S+/.test(email);
-  // },
-
-
   generateToken(payload) {
-    process.env.SECRET="secret";
     const token = jwt.sign(
       payload,
-      process.env.SECRET, { expiresIn: '20d' }
+      "secret", { expiresIn: '20d' }
     );
     return token;
   },
-
 
   
   sendEmail() {

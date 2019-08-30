@@ -81,7 +81,7 @@ class User {
         }
         else{
           loginData.userId=user.id
-          loginData.isAdmin=user.isadmin
+          loginData.isAdmin=user.isAdmin
           loginData.username=user.username
           delete(loginData.password)
           const token = helper.generateToken(loginData);
@@ -185,7 +185,7 @@ class User {
       Users.update(
         {isadmin:true},
         {where : {
-          id = req.params.id
+          id : req.params.id
         }}
         )
         .then(result => {

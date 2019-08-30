@@ -50,12 +50,12 @@ app.get('/', (req, res) => {
 //   res.status(500).send('Something wrong broke!');
 // })
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 10000;
 
 const server = app.listen(port, () => console.log(`app Running on ${port}`));
 
-// process.on('exit', () => server.close())
-// process.on('SIGTERM', () => server.close())
-// process.on('uncaughtException', () => server.close())
+process.on('exit', () => server.close())
+process.on('SIGTERM', () => server.close())
+process.on('uncaughtException', () => server.close())
 
 module.exports = app;

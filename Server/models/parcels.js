@@ -1,20 +1,20 @@
-'use strict';
-module.exports = (sequelize, DataTypes) => {
-  const parcels = sequelize.define('parcels', {
-    placedBy: DataTypes.INTEGER,
-    weight: DataTypes.DOUBLE,
-    weightmetric: DataTypes.STRING,
-    sentOn: DataTypes.DATE,
-    deliveredOn: DataTypes.INTEGER,
-    status: DataTypes.STRING,
-    fromAddress: DataTypes.STRING,
-    toAddress: DataTypes.STRING,
-    currentLocation: DataTypes.STRING,
-    itemname: DataTypes.STRING,
-    recipient: DataTypes.STRING
+const Sequelize = require('sequelize');
+const db = require('../config/db.js');
+
+  const parcel = db.sequelize.define('parcels', {
+    placedBy: Sequelize.INTEGER,
+    weight: Sequelize.DOUBLE,
+    weightmetric: Sequelize.STRING,
+    sentOn: Sequelize.DATE,
+    deliveredOn: Sequelize.INTEGER,
+    status: Sequelize.STRING,
+    fromAddress: Sequelize.STRING,
+    toAddress: Sequelize.STRING,
+    currentLocation: Sequelize.STRING,
+    itemName: Sequelize.STRING,
+    recipient: Sequelize.STRING
   }, {});
-  parcels.associate = function(models) {
-    parcels.belongsTo(models.Users, {})
-  };
-  return parcels;
-};
+   parcel.associate = function(models) {
+     parcel.belongsTo(models.Users, {})
+   };
+  module.exports = parcel;

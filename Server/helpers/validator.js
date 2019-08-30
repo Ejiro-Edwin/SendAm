@@ -31,6 +31,8 @@ const createParcelsSchema = (params) => {
       weight: Joi.number().min(0).required(),
       fromAddress: Joi.string().min(5).max(255).required(),
       toAddress: Joi.string().min(5).max(255).required(),
+      itemName: Joi.string().min(5).max(50).required(),
+      recipient: Joi.string().min(2).max(50).required(),
       currentLocation: Joi.string().min(5).max(255).required()
     };
     return Joi.validate(params, schema);

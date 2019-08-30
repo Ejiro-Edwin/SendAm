@@ -5,7 +5,8 @@ module.exports = {
     dialect: 'mysql',
     username: 'root',
     password: '',
-    port: 3306
+    port: 3306,
+    operatorsAliases: false
   },
   production: {
     url: process.env.DATABASE_URL,
