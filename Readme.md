@@ -2,8 +2,6 @@
 
 [![Maintainability](https://api.codeclimate.com/v1/badges/fb1920094e54376a3fcc/maintainability)](https://codeclimate.com/github/Ejiro-Edwin/SendAm/maintainability)
 
-[![Test Coverage](https://api.codeclimate.com/v1/badges/fb1920094e54376a3fcc/test_coverage)](https://codeclimate.com/github/Ejiro-Edwin/SendAm/test_coverage)
-
 [![Coverage Status](https://coveralls.io/repos/github/Ejiro-Edwin/SendAm/badge.svg?branch=master)](https://coveralls.io/github/Ejiro-Edwin/SendAm?branch=master)
 
 # Send-AM
