@@ -1,9 +1,14 @@
-# Send-AM
-SendAM is a courier service that helps users deliver parcels to different destinations. SendIT provides courier quotes based on weight categories.
-
 [![Build Status](https://travis-ci.org/Ejiro-Edwin/SendAm.svg?branch=master)](https://travis-ci.org/Ejiro-Edwin/SendAm)
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/fb1920094e54376a3fcc/maintainability)](https://codeclimate.com/github/Ejiro-Edwin/SendAm/maintainability)
+
+[![Test Coverage](https://api.codeclimate.com/v1/badges/fb1920094e54376a3fcc/test_coverage)](https://codeclimate.com/github/Ejiro-Edwin/SendAm/test_coverage)
+
 [![Coverage Status](https://coveralls.io/repos/github/Ejiro-Edwin/SendAm/badge.svg?branch=master)](https://coveralls.io/github/Ejiro-Edwin/SendAm?branch=master)
+
+# Send-AM
+
+SendAM is a courier service that helps users deliver parcels to different destinations. SendIT provides courier quotes based on weight categories.
 
 ![):](https://github.com/Ejiro-Edwin/SendAm/blob/master/API_INT.PNG)
 
