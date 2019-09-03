@@ -52,54 +52,48 @@ module.exports = {
             post: {
                 tags: ["Auth"],
                 summary: "Create an account for a new user on the API",
-                description: "Returns success 201 on success.",
+                description: "Returns status 201 on success.",
                 consumes: ["application/x-www-form-urlencoded"],
                 parameters: [
                     {
                         name: "firstname",
                         in: "formData",
-                        description:
-                            "The firstname of the user account to be created",
+                        description:"The firstname of the user account to be created",
                         required: true,
                         type: "string"
                     },
                     {
                         name: "lastname",
                         in: "formData",
-                        description:
-                            "The lastname for the user account to be created",
+                        description:"The lastname for the user account to be created",
                         required: true,
                         type: "string"
                     },
                     {
                         name: "othernames",
                         in: "formData",
-                        description:
-                            "The other name of the user to be created",
-                        required: false,
+                        description:"The other name of the user to be created",
+                        required: true,
                         type: "string"
                     },
                     {
                         name: "email",
                         in: "formData",
-                        description:
-                            "The email of the user account to be created",
+                        description:"The email of the user account to be created",
                         required: true,
                         type: "string"
                     },
                     {
                         name: "username",
                         in: "formData",
-                        description:
-                            "The username of the user account to be created",
+                        description:"The username of the user account to be created",
                         required: true,
                         type: "string"
                     },
                     {
                         name: "password",
                         in: "formData",
-                        description:
-                            "The password for the user account to be created",
+                        description:"The password for the user account to be created",
                         required: true,
                         type: "string"
                     }
@@ -120,53 +114,7 @@ module.exports = {
                 }
             }
         },
-        "/parcels": {
-            post: {
-                tags: ["Parcels"],
-                summary: "Work with parcel delivery orders",
-                consumes: ["application/x-www-form-urlencoded"],
-                parameters: [
-                    {
-                        name: "Bearer",
-                        in: "header",
-                        description: "Authorization token",
-                        required: true,
-                        type: "string"
-                    },
-                    {
-                        name: "weight",
-                        in: "formData",
-                        description: "The newpassword to be changed",
-                        required: true,
-                        type: "number"
-                    },
-                    {
-                        name: "fromAddress",
-                        in: "formData",
-                        description: "The verified token",
-                        required: true,
-                        type: "string"
-                    },
-                    {
-                      name: "toddress",
-                      in: "formData",
-                      description: "The verified token",
-                      required: true,
-                      type: "string"
-                  }
-                ],
-                description: "Create a new parcel delivery order",
-                responses: {
-                    "200": {
-                        description: "Parcel created Successfully"
-                    },
-                    "400": {
-                        description: "There Was an Error creating the parcel delivery order"
-                    }
-                }
-            }
-        },
-        "/parcels": {
+        "/parcels/All": {
             get: {
                 tags: ["Parcels"],
                 summary: "Get parcel delivery orders",
@@ -205,8 +153,77 @@ module.exports = {
                 ]
             }
         },
+        "/parcels": {
+            post: {
+                tags: ["Parcels"],
+                summary: "Work with parcel delivery orders",
+                consumes: ["application/x-www-form-urlencoded"],
+                parameters: [
+                    {
+                        name: "Bearer",
+                        in: "header",
+                        description: "Authorization token",
+                        required: true,
+                        type: "string"
+                    },
+                    {
+                        name: "weight",
+                        in: "formData",
+                        description: "The weight of your parcel",
+                        required: true,
+                        type: "number"
+                    },
+                    {
+                        name: "fromAddress",
+                        in: "formData",
+                        description: "The originating Address",
+                        required: true,
+                        type: "string"
+                    },
+                    {
+                      name: "toddress",
+                      in: "formData",
+                      description: "The Destination Address",
+                      required: true,
+                      type: "string"
+                  },
+                  {
+                    name: "currentLocation",
+                    in: "formData",
+                    description: "The Parcels current Location",
+                    required: true,
+                    type: "string"
+                },
+                {
+                    name: "itemName",
+                    in: "formData",
+                    description: "The Parcels Item Name",
+                    required: true,
+                    type: "string"
+                },
+                {
+                    name: "recipient",
+                    in: "formData",
+                    description: "The Parcels Recipient",
+                    required: true,
+                    type: "string"
+                }
+                ],
+                
+                responses: {
+                    "200": {
+                        description: "Parcel created Successfully"
+                    },
+                    "400": {
+                        description: "There Was an Error creating the parcel delivery order"
+                    }
+                }
+            }
+        },
+
+     
         "/parcels/:id/cancel": {
-          get: {
+            patch: {
               tags: ["Parcels"],
               summary: "Cancel a parcel delivery order",
               consumes: ["application/x-www-form-urlencoded"],
@@ -222,7 +239,7 @@ module.exports = {
           }
       },
       "/parcels/:id/destination": {
-        get: {
+        patch: {
             tags: ["Parcels"],
             summary: "Change a parcel delivery order's destination",
             consumes: ["application/x-www-form-urlencoded"],
@@ -245,7 +262,7 @@ module.exports = {
         }
     },
     "/parcels/:id/currentlocation": {
-      get: {
+      patch: {
           tags: ["Parcels"],
           summary: "Change a parcel delivery order's current location",
           consumes: ["application/x-www-form-urlencoded"],

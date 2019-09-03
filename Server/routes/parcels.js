@@ -5,7 +5,7 @@ const Auth = require('../middleware/auth');
 let router = express.Router();
 router.use(express.json());
 
-router.get('/',Auth.verifyToken, parcelController.getAll);
+router.get('/All',Auth.verifyToken, parcelController.getAll);
 router.get('/:id',Auth.verifyToken, parcelController.getOne);
 router.post('/',Auth.verifyToken, parcelController.create);
 router.patch('/:id/cancel',Auth.verifyToken, parcelController.cancel);

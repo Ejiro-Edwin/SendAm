@@ -1,7 +1,7 @@
-import Auth from '../controllers/UsersController'
-import chai from 'chai'
-import chaiHttp from 'chai-http'
-import app from '../app'
+const Auth = require('../controllers/UsersController'); 
+const chai =  require('chai');
+const chaiHttp = require('chai-http');
+const app = require('../app'); 
 
 let should = chai.should();
 chai.use(chaiHttp)
@@ -15,8 +15,8 @@ describe ('Authentication Tests', () => {
   describe('/POST login to the application', () => {
     it('return a token and a message', (done) => {
       let loginData = {
-       email: "egbunaoluebube@gmail.com",
-       password: "princess"
+       email: "ejirotesting@gmail.com",
+       password: "password"
       };
       chai.request(app)
           .post('/api/v1/auth/login')
@@ -33,11 +33,11 @@ describe ('Authentication Tests', () => {
   describe('/POST signup already existing user', () => {
     it('should not be successful', (done) => {
       let loginData = {
-        firstname: "Udum",
-        lastname: "Ngozi",
-        email: "udumNgozi@gmail.com",
-        username: "udungozi.123",
-        password: "princess"
+        firstname: "Ejiro",
+        lastname: "Obamrevwo",
+        email: "ejiroedwin@gmail.com",
+        username: "Ejiro.123",
+        password: "password"
       };
       chai.request(app)
           .post('/api/v1/auth/signup')
