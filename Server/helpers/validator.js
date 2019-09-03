@@ -1,6 +1,5 @@
 const Joi = require('joi');
 
-
 const signUpSchema = (params) => {
   const schema = {
     firstname: Joi.string().min(2).max(50).required(),   //validate
@@ -13,8 +12,6 @@ const signUpSchema = (params) => {
   return Joi.validate(params, schema);
 }
 
-
-
 const loginSchema = (params) => {
   const schema = {
     email: Joi.string().min(5).max(255).required().email(),
@@ -22,8 +19,6 @@ const loginSchema = (params) => {
   };
   return Joi.validate(params, schema);
 }
-
-
 
 const createParcelsSchema = (params) => {
     const schema = {
@@ -36,9 +31,7 @@ const createParcelsSchema = (params) => {
       currentLocation: Joi.string().min(5).max(255).required()
     };
     return Joi.validate(params, schema);
-  }
-  
-  
+  }  
   
   const destinationSchema = (params) => {
     const schema = {
@@ -47,16 +40,12 @@ const createParcelsSchema = (params) => {
     return Joi.validate(params, schema);
   }
 
-  
-
 const currentLocationSchema = (params) => {
   const schema = {
     currentLocation: Joi.string().min(5).max(255).required()
   };
   return Joi.validate(params, schema);
 }
-
-
 
 const changeStatusSchema = (params) => {
   const schema = {
@@ -65,10 +54,7 @@ const changeStatusSchema = (params) => {
    return Joi.validate(params, schema);
 }
 
-const makeAdminSchema = {
-
-}
-
+const makeAdminSchema = {}
 module.exports = {
   signUpSchema, loginSchema, createParcelsSchema, destinationSchema, currentLocationSchema,
   changeStatusSchema, makeAdminSchema

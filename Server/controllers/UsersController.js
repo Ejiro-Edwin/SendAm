@@ -3,23 +3,16 @@ const dotenv = require('dotenv');
 const helper = require ('../helpers/helper');
 const Users = require('../models/users');
 const Parcels = require('../models/parcels');
-
-
 const {
   signUpSchema,
   loginSchema
 } = require ('../helpers/validator');
-
 dotenv.config();
-
 class User {
   static signup(req, res) {
-
     const fieldError = signUpSchema(req.body)
     if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
-
     const hashedPassword = helper.hashPassword(req.body.password);
-
     const UserData = {
       firstname: req.body.firstname,
       lastname: req.body.lastname,
@@ -58,23 +51,18 @@ class User {
 
 
   static login (req, res) {
-
   const fieldError = loginSchema(req.body)
   if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
-
-
     const loginData = {
       email: req.body.email,
       password: req.body.password
     };
-
     Users.findOne({
       where:{
         email: req.body.email
       }
     }).then(user =>{
       if(user){
-        // if(!helper.comparePassword(result.rows[0].password, req.body.password)) {
           if(!helper.comparePassword(user.password, req.body.password)) {
           return res.status(400).json({ 'message': 'The credentials you provided are incorrect' });
         }
@@ -127,7 +115,6 @@ class User {
           id: req.params.id
         }
       })
-
       .then(user =>{
         if(!user){
           res.status(204).send({"status": 204, "message": "No Such User Found"})
@@ -148,14 +135,12 @@ class User {
 
 
   static getUserParcels (req, res) {
-
     if(req.adminStatus) {
       Parcels.findAll({
         where:{
           placedBy: req.params.id
         }
       })
-
       .then(result =>{
         if(!result){
           res.status(400).send({"status": 400, "message": "User has no parcel delivery orders"})
@@ -206,8 +191,4 @@ class User {
   }
       
 }
-
-
-
-
 module.exports = User;

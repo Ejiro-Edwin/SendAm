@@ -15,10 +15,8 @@ dotenv.config();
 
 class Parcels {
   static create(req, res) {
-
     const fieldError = createParcelsSchema(req.body)
     if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
-
     let newOrder = {
       placedBy: req.user,
       weight: req.body.weight,
@@ -79,7 +77,6 @@ class Parcels {
 
     static getOne(req, res) {
     if (!req.adminStatus) {
-
       parcel.findOne({
         where:{
           ID:req.params.id,
@@ -146,9 +143,7 @@ class Parcels {
 
     const fieldError = destinationSchema(req.body)
     if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
-
     const newDestination = req.body.toAddress
-
     parcel.update(
       {toAddress:newDestination},
       {where : {
@@ -174,12 +169,9 @@ class Parcels {
 
   static changeCurrentLocation(req, res) {
     if (req.adminStatus) {
-      
       const fieldError = currentLocationSchema(req.body)
       if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
-     
       const currentLocation = req.body.currentLocation
-
       parcel.update(
         {toAddress:currentLocation},
         {where : {
@@ -207,10 +199,8 @@ class Parcels {
 
 static changeStatus(req, res) {
   if (req.adminStatus) {
-
     const fieldError = changeStatusSchema(req.body)
     if (fieldError.error) return res.status(400).send(fieldError.error.details[0].message);
-
     const status = req.body.status
     parcel.update(
       {status:status},
