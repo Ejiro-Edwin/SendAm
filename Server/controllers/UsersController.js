@@ -165,7 +165,6 @@ class User {
 
   static makeAdmin(req, res) {
     if (req.adminStatus) {
-      const adminstatus = true
       Users.update(
         {isadmin:true},
         {where : {

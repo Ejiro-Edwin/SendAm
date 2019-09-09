@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const sgMail = require('@sendgrid/mail');
-const config = require('config');
+const config = require('../config/config');
 
 dotenv.config();
 
@@ -18,7 +18,7 @@ const helper = {
   generateToken(payload) {
     const token = jwt.sign(
       payload,
-      config.get('SECRET'), { expiresIn: '20d' }
+      config.secret, { expiresIn: '20d' }
     );
     return token;
   },
