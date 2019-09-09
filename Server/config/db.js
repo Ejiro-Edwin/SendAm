@@ -3,6 +3,7 @@ const db = {}
 const sequelize = new Sequelize('kkaUAdJbRK', 'kkaUAdJbRK', 'bPOh86jri0', {
   host: 'remotemysql.com',
   dialect: 'mysql',
+  
   operatorsAliases: false,
 
   pool: {
