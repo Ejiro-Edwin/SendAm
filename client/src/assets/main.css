@@ -1,0 +1,104 @@
+* {
+    margin: 0;
+    padding: 0;
+  }
+  
+  .form-holder {
+    align-self: center;
+    background-color: white;
+    opacity: 0.8;
+    border-radius: 9px;
+    display: inline-block;
+    margin: auto;
+    padding: 20px 5px;
+    position: absolute;
+    width: 30%;
+  }
+  
+  .linker {
+    color: #2b70ac;
+    cursor: pointer;
+  }
+  
+  .link {
+    cursor: pointer;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 10%;
+    left: 10%;
+    right: 10%;
+    bottom: 10%;
+    border: 1px solid #ccc;
+    background: white;
+    overflow: auto;
+    border-radius: 9px;
+    outline: none;
+    padding: 20px;
+    display: block;
+  }
+  
+  .modal .form-holder{
+    position: inherit;
+    left: 35%;
+    top: 20%;
+  }
+  
+  .modal .form-holder .form button{
+    width: 40%;
+    margin-left: 30%
+  }
+  
+  .caption p {
+    margin-bottom: 10px;
+  }
+  
+  .caption button {
+    font-size: 20px;
+    cursor: pointer;
+  }
+  
+  button {
+    cursor: pointer;
+  }
+  
+  .main-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .message {
+    font-size: 1.2em;
+    padding-left: 8%;
+  }
+  
+  @media all and (max-width:550px) and (min-width:0px) {
+    .form-holder {
+      width: 90%;
+    }
+    .modal .form-holder{
+      width: 50%;
+      left: 25%;
+    }
+  }
+  
+  @media all and (max-width:890px) and (min-width:590px) {
+    .form-holder {
+      width: 50%;
+    }
+    .modal .form-holder{
+      left: 25%;
+    }
+  }
+  
+  @media all and (max-width:100px) and (min-width:881px) {
+    .form-holder {
+      width: 40%;
+    }
+  
+    .modal .form-holder{
+      width: 50%
+    }
+  }
